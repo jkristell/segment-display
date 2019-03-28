@@ -2,6 +2,9 @@
 name = "segment-display"
 version = "0.1.0"
 authors = ["Johan Kristell <johan@jott.se>", "Daniel Moberg <daniel.moberg@gmail.com>"]
+description = "Embedded hal driver for 7-segment displays"
+repository = "https://github.com/jkristell/segment-display"
+license = "MIT OR Apache-2.0"
 edition = "2018"
 
 [dependencies]
