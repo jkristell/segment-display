@@ -1,0 +1,8 @@
+[package]
+name = "segment_display"
+version = "0.1.0"
+authors = ["Johan Kristell <johan@jott.se>", "Daniel Moberg <daniel.moberg@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+embedded-hal = "0.2.2"
