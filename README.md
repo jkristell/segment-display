@@ -1,5 +1,7 @@
 # segment-display
 
+[![docs.rs](https://docs.rs/segment-display/badge.svg)](https://docs.rs/segment-display/)
+
 This is a driver crate for simple seven segments displays.
 
 This crate was created for a seven-segment module made by 
