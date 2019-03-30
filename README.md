@@ -15,7 +15,7 @@ therefore you have to cycle through them, update every digit in turn fast enough
 
 Right now this crate is tailored for this particular PCB and setup, but it shouldn't be too hard to modify it to support other configurations.
 
-A simple example on how to use this driver is included below, and two other examples are available in my [nucleo-f401re](https://github.com/jkristell/nucleo-f401re/tree/segment-display/examples) crate.
+A simple example on how to use this driver is included below, and two other examples are available in my [nucleo-f401re](https://github.com/jkristell/nucleo-f401re/tree/master/examples) crate.
 The RTFM based one is particularly nice as it does the refresh in a RTFM scheduled task.
 
 
