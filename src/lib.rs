@@ -65,7 +65,7 @@
 
 use embedded_hal::blocking::delay::DelayUs;
 use embedded_hal::blocking::spi;
-use embedded_hal::digital::OutputPin;
+use embedded_hal::digital::v2::OutputPin;
 
 pub struct SegmentDisplay<SPI, PIN> {
     back_buffer: [u8; 4],
@@ -73,6 +73,14 @@ pub struct SegmentDisplay<SPI, PIN> {
     latch_pin: PIN,
     current_digit: usize,
 }
+
+
+#[derive(Debug)]
+pub enum Error<SpiError, PinError> {
+    Spi(SpiError),
+    Pin(PinError)
+}
+
 
 impl<SPI, PIN> SegmentDisplay<SPI, PIN>
 where
@@ -96,7 +104,7 @@ where
 
     /// Refresh the display. Needs to be called periodically with a sufficientlty hight frequenzy
     /// otherwise the display will flicker.
-    pub fn refresh(&mut self) -> Result<(), SPI::Error> {
+    pub fn refresh(&mut self) -> Result<(), Error<SPI::Error, PIN::Error>> {
         let segments_and_select: [u8; 2] = [
             // The segments in digit to turn on/off
             self.back_buffer[self.current_digit],
@@ -106,14 +114,20 @@ where
 
         self.current_digit = (self.current_digit + 1) & 0b11;
 
-        self.latch_pin.set_low();
-        let res = self.spi.write(&segments_and_select)?;
-        self.latch_pin.set_high();
+        self.latch_pin.set_low().map_err(Error::Pin)?;
+
+        let res = self.spi
+                .write(&segments_and_select)
+                .map_err(Error::Spi)?;
+
+        self.latch_pin
+                .set_high()
+                .map_err(Error::Pin)?;
 
         Ok(res)
     }
 
-    pub fn refresh_with_delay<DELAY>(&mut self, delay: &mut DELAY) -> Result<(), SPI::Error>
+    pub fn refresh_with_delay<DELAY>(&mut self, delay: &mut DELAY) -> Result<(), Error<SPI::Error, PIN::Error>>
     where
         DELAY: DelayUs<u16>,
     {
@@ -126,10 +140,17 @@ where
 
         self.current_digit = (self.current_digit + 1) & 0b11;
 
-        self.latch_pin.set_low();
-        let res = self.spi.write(&segments_and_select)?;
+        self.latch_pin
+                .set_low()
+                .map_err(Error::Pin)?;
+        let res = self.spi
+                .write(&segments_and_select)
+                .map_err(Error::Spi)?;
+
         delay.delay_us(100);
-        self.latch_pin.set_high();
+        self.latch_pin
+                .set_high()
+                .map_err(Error::Pin)?;
 
         Ok(res)
     }
