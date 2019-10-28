@@ -2,7 +2,7 @@
 
 //! A platform agnostic driver to interface with 7-segments displays
 //! connected to shift registers
-//! 
+//!
 //! This is work-in-progress!
 //!
 //! Example
@@ -77,7 +77,7 @@ pub struct SegmentDisplay<SPI, PIN> {
 #[derive(Debug)]
 pub enum Error<SpiError, PinError> {
     Spi(SpiError),
-    Pin(PinError)
+    Pin(PinError),
 }
 
 impl<SPI, PIN> SegmentDisplay<SPI, PIN>
@@ -114,18 +114,17 @@ where
 
         self.latch_pin.set_low().map_err(Error::Pin)?;
 
-        let res = self.spi
-                .write(&segments_and_select)
-                .map_err(Error::Spi)?;
+        let res = self.spi.write(&segments_and_select).map_err(Error::Spi)?;
 
-        self.latch_pin
-                .set_high()
-                .map_err(Error::Pin)?;
+        self.latch_pin.set_high().map_err(Error::Pin)?;
 
         Ok(res)
     }
 
-    pub fn refresh_with_delay<DELAY>(&mut self, delay: &mut DELAY) -> Result<(), Error<SPI::Error, PIN::Error>>
+    pub fn refresh_with_delay<DELAY>(
+        &mut self,
+        delay: &mut DELAY,
+    ) -> Result<(), Error<SPI::Error, PIN::Error>>
     where
         DELAY: DelayUs<u16>,
     {
@@ -138,17 +137,11 @@ where
 
         self.current_digit = (self.current_digit + 1) & 0b11;
 
-        self.latch_pin
-                .set_low()
-                .map_err(Error::Pin)?;
-        let res = self.spi
-                .write(&segments_and_select)
-                .map_err(Error::Spi)?;
+        self.latch_pin.set_low().map_err(Error::Pin)?;
+        let res = self.spi.write(&segments_and_select).map_err(Error::Spi)?;
 
         delay.delay_us(100);
-        self.latch_pin
-                .set_high()
-                .map_err(Error::Pin)?;
+        self.latch_pin.set_high().map_err(Error::Pin)?;
 
         Ok(res)
     }
@@ -162,7 +155,6 @@ where
 
     /// Write a string to the display
     pub fn write_str(&mut self, s: &str) {
-
         self.back_buffer.iter_mut().for_each(|b| *b = !0);
 
         for (i, c) in s.chars().take(4).enumerate() {
@@ -207,7 +199,7 @@ where
                 ' ' => 0b1111_1111,
                 '-' => 0b1011_1111,
                 '_' => 0b1111_0111,
-                _   => 0b1111_1111,
+                _ => 0b1111_1111,
             }
         }
     }
@@ -221,46 +213,45 @@ where
 //          ===
 //           D
 
-
 static NUMERALS: [u8; 10] = [
     //.GFE_DCBA
-    0b1100_0000,    // 0
-    0b1111_1001,    // 1
-    0b1010_0100,    // 2
-    0b1011_0000,    // 3
-    0b1001_1001,    // 4
-    0b1001_0010,    // 5
-    0b1000_0010,    // 6
-    0b1111_1000,    // 7
-    0b1000_0000,    // 8
-    0b1001_1000,    // 9
+    0b1100_0000, // 0
+    0b1111_1001, // 1
+    0b1010_0100, // 2
+    0b1011_0000, // 3
+    0b1001_1001, // 4
+    0b1001_0010, // 5
+    0b1000_0010, // 6
+    0b1111_1000, // 7
+    0b1000_0000, // 8
+    0b1001_1000, // 9
 ];
 
 static LETTERS: [u8; 26] = [
-    0b1000_1000,    // A
-    0b1000_0011,    // B
-    0b1100_0110,    // C
-    0b1010_0001,    // D
-    0b1000_0110,    // E
-    0b1000_1110,    // F
-    0b1100_0010,    // G
-    0b1000_1001,    // H
-    0b1100_1111,    // I
-    0b1110_0001,    // J
-    0b1000_1010,    // K
-    0b1100_0111,    // L
-    0b1110_1010,    // M
-    0b1100_1000,    // N
-    0b1100_0000,    // O
-    0b1000_1100,    // P
-    0b1001_0100,    // Q
-    0b1100_1100,    // R
-    0b1001_0010,    // S
-    0b1000_0111,    // T
-    0b1100_0001,    // U
-    0b1100_0001,    // V
-    0b1101_0101,    // W
-    0b1000_1001,    // X
-    0b1001_0001,    // Y
-    0b1010_0100,    // Z
+    0b1000_1000, // A
+    0b1000_0011, // B
+    0b1100_0110, // C
+    0b1010_0001, // D
+    0b1000_0110, // E
+    0b1000_1110, // F
+    0b1100_0010, // G
+    0b1000_1001, // H
+    0b1100_1111, // I
+    0b1110_0001, // J
+    0b1000_1010, // K
+    0b1100_0111, // L
+    0b1110_1010, // M
+    0b1100_1000, // N
+    0b1100_0000, // O
+    0b1000_1100, // P
+    0b1001_0100, // Q
+    0b1100_1100, // R
+    0b1001_0010, // S
+    0b1000_0111, // T
+    0b1100_0001, // U
+    0b1100_0001, // V
+    0b1101_0101, // W
+    0b1000_1001, // X
+    0b1001_0001, // Y
+    0b1010_0100, // Z
 ];
