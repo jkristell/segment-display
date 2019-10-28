@@ -74,13 +74,11 @@ pub struct SegmentDisplay<SPI, PIN> {
     current_digit: usize,
 }
 
-
 #[derive(Debug)]
 pub enum Error<SpiError, PinError> {
     Spi(SpiError),
     Pin(PinError)
 }
-
 
 impl<SPI, PIN> SegmentDisplay<SPI, PIN>
 where
